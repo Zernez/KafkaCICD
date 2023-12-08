@@ -1,0 +1,70 @@
+version: "1"
+
+volumes:
+  kafka_data:
+    driver: local
+  db-data:
+
+networks:
+  jenkins:
+    driver: bridge
+
+services:
+    kproducer:
+      image: kafkajava-prod:latest
+      build: ./producer
+      ports:
+        - 5000:9092
+        - 4999:8091
+        #- 9092:9092
+      volumes:
+        - kafka_data:/bitnami
+      environment:
+        # KRaft settings
+        - KAFKA_CFG_NODE_ID=0
+        - KAFKA_CFG_PROCESS_ROLES=controller,broker
+        - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+        # Listeners
+        - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+        - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://:9092
+        - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+        - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+        - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+      networks:
+        - jenkins
+
+    kconsumer:
+      image: kafkajava-cons:latest
+      build: ./consumer
+      ports:
+        - 5001:9092
+        - 5002:8090
+        #- 9092:9092
+      volumes:
+        - kafka_data:/bitnami
+      environment:
+        # KRaft settings
+        - KAFKA_CFG_NODE_ID=0
+        - KAFKA_CFG_PROCESS_ROLES=controller,broker
+        - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+        # Listeners
+        - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+        - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://:9092
+        - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+        - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+        - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+      depends_on:
+        - db
+      networks:
+        - jenkins
+
+    db:
+      image: postgres:9.4
+      volumes:
+        - "db-data:/var/lib/postgresql/data"
+      environment:
+        - POSTGRES_HOST_AUTH_METHOD=trust
+      networks:
+        - jenkins
+
+
