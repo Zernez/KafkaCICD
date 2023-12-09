@@ -229,6 +229,7 @@ pipeline {
             steps{
                 echo 'Deploy instavote app with docker compose'
                 sh 'docker compose up -d'
+                sleep time: 30, unit: 'SECONDS'
             }
         }
 
@@ -374,7 +375,13 @@ pipeline {
                 '''
                 sh '''
                     docker rm owasp
-                '''  
+                '''
+                sh '''
+                    docker compose down
+                '''
+                sh '''
+                    docker compose down
+                '''                  
             }             
         }
 
