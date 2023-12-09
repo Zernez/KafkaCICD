@@ -28,7 +28,7 @@ pipeline {
             }
 
             when{
-                changeset "**/producer/**"
+                changeset "producer/*"
             }
 
             steps{
@@ -48,7 +48,7 @@ pipeline {
             }
 
             when{
-                changeset "**/producer/**"
+                changeset "producer/*"
             }
 
             steps{
@@ -67,7 +67,7 @@ pipeline {
             }
 
             when{
-                changeset "**/producer/**"
+                changeset "producer/*"
             }
             
             steps{
@@ -82,7 +82,7 @@ pipeline {
             agent any          
             
             when{            
-                changeset "**/producer/**"                  
+                changeset "producer/*"                  
             }          
 
             steps{            
@@ -105,7 +105,7 @@ pipeline {
             }
 
             when{
-                changeset "**/consumer/**"
+                changeset "consumer/*"
             }
 
             steps{
@@ -124,7 +124,7 @@ pipeline {
             }
 
             when{
-                changeset "**/counsumer/**"
+                changeset "consumer/*"
             }
 
             steps{
@@ -143,7 +143,7 @@ pipeline {
             }
 
             when{
-                changeset "**/consumer/**"
+                changeset "consumer/*"
             }
             
             steps{
@@ -158,7 +158,7 @@ pipeline {
             agent any          
             
             when{            
-                changeset "**/consumer/**"                  
+                changeset "consumer/*"                 
             }          
 
             steps{            
@@ -257,7 +257,7 @@ pipeline {
                         echo "Starting container --> Start"
                         sh """
                         docker run -p 9090:8090 -dt --name owasp \
-                        --net instavote \
+                        --net jenkins \
                         owasp/zap2docker-stable \
                         /bin/bash
                         """
@@ -357,6 +357,7 @@ pipeline {
                         docker cp owasp:/zap/wrk/report.xml "${WORKSPACE}/report2.xml"
                     '''
                     }
+                sleep time: 30, unit: 'SECONDS'
             }
         }
     }

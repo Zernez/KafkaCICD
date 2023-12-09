@@ -41,7 +41,7 @@ services:
     image: kafkajava-prod:latest
     build: ./producer
     ports:
-      - 5000:8090
+      - 5000:8092
     depends_on:
       - db
       - kafka
