@@ -33,7 +33,7 @@ pipeline {
 
             steps{
                 echo 'Compiling producer app'
-                dir('app'){
+                dir('producer'){
                     sh 'mvn compile'
                 }
             }
@@ -53,7 +53,7 @@ pipeline {
 
             steps{
                 echo 'Running Unit Tets on producer app'
-                dir('app'){
+                dir('producer'){
                     sh 'mvn test'
                 }
             }
@@ -73,7 +73,7 @@ pipeline {
             
             steps{
                 echo 'Packaging producer app'
-                dir('app'){
+                dir('producer'){
                     sh 'mvn clean package spring-boot:repackage -DskipTests'
                 }
             }
@@ -111,7 +111,7 @@ pipeline {
 
             steps{
                 echo 'Compiling consumer app'
-                dir('app'){
+                dir('consumer'){
                     sh 'mvn compile'
                 }
             }
@@ -131,7 +131,7 @@ pipeline {
 
             steps{
                 echo 'Running Unit Tests on consumer app'
-                dir('app'){
+                dir('consumer'){
                     sh 'mvn test'
                 }
             }
@@ -151,7 +151,7 @@ pipeline {
             
             steps{
                 echo 'Packaging consumer app'
-                dir('app'){
+                dir('consumer'){
                     sh 'mvn clean package spring-boot:repackage -DskipTests'
                 }
             }
