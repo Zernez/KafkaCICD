@@ -225,7 +225,7 @@ pipeline {
             
             steps{
                 echo 'Deploy instavote app with docker compose'
-                sh 'docker network create jenkins'  
+                // sh 'docker network create jenkins'  
                 sh 'docker compose up -d'
                 sleep time: 60, unit: 'SECONDS'
             }
@@ -368,12 +368,12 @@ pipeline {
             script {
                 echo 'Building multibranch pipeline for worker is completed' 
                 echo "Removing container..."
-                sh '''
-                    docker stop owasp
-                '''
-                sh '''
-                    docker rm owasp
-                '''
+                // sh '''
+                //     docker stop owasp
+                // '''
+                // sh '''
+                //     docker rm owasp
+                // '''
                 sh '''
                     sleep 2m
                 '''      
