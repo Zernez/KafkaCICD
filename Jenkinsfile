@@ -27,9 +27,9 @@ pipeline {
                 }
             }
 
-            // when{
-            //     changeset "producer/*"
-            // }
+            when{
+                changeset "producer/*"
+            }
 
             steps{
                 echo 'Compiling producer app'
@@ -47,9 +47,9 @@ pipeline {
                 }
             }
 
-            // when{
-            //     changeset "producer/*"
-            // }
+            when{
+                changeset "producer/*"
+            }
 
             steps{
                 echo 'Running Unit Tets on producer app'
@@ -66,9 +66,9 @@ pipeline {
                 }
             }
 
-            // when{
-            //     changeset "producer/*"
-            // }
+            when{
+                changeset "producer/*"
+            }
             
             steps{
                 echo 'Packaging producer app'
@@ -81,9 +81,9 @@ pipeline {
         stage('Producer docker-package'){          
             agent any          
             
-            // when{            
-            //     changeset "producer/*"                  
-            // }          
+            when{            
+                changeset "producer/*"                  
+            }          
 
             steps{            
                 echo 'Packaging producer app with docker: version and latest'            
@@ -104,9 +104,9 @@ pipeline {
                 }
             }
 
-            // when{
-            //     changeset "consumer/*"
-            // }
+            when{
+                changeset "consumer/*"
+            }
 
             steps{
                 echo 'Compiling consumer app'
@@ -123,9 +123,9 @@ pipeline {
                 }
             }
 
-            // when{
-            //     changeset "consumer/*"
-            // }
+            when{
+                changeset "consumer/*"
+            }
 
             steps{
                 echo 'Running Unit Tests on consumer app'
@@ -142,9 +142,9 @@ pipeline {
                 }
             }
 
-            // when{
-            //     changeset "consumer/*"
-            // }
+            when{
+                changeset "consumer/*"
+            }
             
             steps{
                 echo 'Packaging consumer app'
@@ -157,9 +157,9 @@ pipeline {
         stage('consumer docker-package'){          
             agent any          
             
-            // when{            
-            //     changeset "consumer/*"                 
-            // }          
+            when{            
+                changeset "consumer/*"                 
+            }          
 
             steps{            
                 echo 'Packaging consumer app with docker: version and latest'            
@@ -225,7 +225,7 @@ pipeline {
             
             steps{
                 echo 'Deploy instavote app with docker compose'
-                // sh 'docker network create jenkins'  
+                sh 'docker network create jenkins'  
                 sh 'docker compose up -d'
                 sleep time: 60, unit: 'SECONDS'
             }
@@ -375,7 +375,7 @@ pipeline {
                     docker rm owasp
                 '''
                 sh '''
-                    sleep 10m
+                    sleep 2m
                 '''      
                 sh '''
                     docker compose down
