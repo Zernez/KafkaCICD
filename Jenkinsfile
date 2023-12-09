@@ -227,6 +227,7 @@ pipeline {
                 echo 'Deploy instavote app with docker compose'
                 sh 'docker network create jenkins'  
                 sh 'docker compose up -d'
+                sleep time: 60, unit: 'SECONDS'
             }
         }
 
@@ -358,7 +359,6 @@ pipeline {
                         docker cp owasp:/zap/wrk/report.xml "${WORKSPACE}/report2.xml"
                     '''
                     }
-                sleep time: 30, unit: 'SECONDS'
             }
         }
     }

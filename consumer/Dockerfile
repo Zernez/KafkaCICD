@@ -5,6 +5,7 @@ RUN apt-get update && \
 
 WORKDIR /app
 COPY .  .
+RUN sleep 30
 CMD java -jar target/consumer-0.0.1-SNAPSHOT.jar  
 WORKDIR /
 
