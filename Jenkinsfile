@@ -6,11 +6,11 @@ pipeline {
                 description: 'Type of scan that is going to perform inside the container',
                 name: 'SCAN_TYPE')
 
-        string (defaultValue: 'http://host.docker.internal:8091',
+        string (defaultValue: 'http://host.docker.internal:5000',
                 description: 'Target URL to scan',
                 name: 'TARGET')
 
-        string (defaultValue: 'http://host.docker.internal:8092',
+        string (defaultValue: 'http://host.docker.internal:5001',
                 description: 'Second target URL to scan',
                 name: 'TARGET2')
 
