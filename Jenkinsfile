@@ -225,7 +225,7 @@ pipeline {
             
             steps{
                 echo 'Deploy instavote app with docker compose'
-                sh 'docker network create jenkins'  
+                // sh 'docker network create jenkins'  
                 sh 'docker compose up -d'
                 sleep time: 60, unit: 'SECONDS'
             }
