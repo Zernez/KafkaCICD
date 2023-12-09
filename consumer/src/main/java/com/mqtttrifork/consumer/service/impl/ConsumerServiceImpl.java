@@ -17,6 +17,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 
 import com.mqtttrifork.consumer.dto.ConsumerDTO;
 import com.mqtttrifork.consumer.service.ConsumerService;
+import java.sql.ResultSet;
 
 //Makes the instance of a class in singleton
 @Service
@@ -46,6 +47,24 @@ public class ConsumerServiceImpl implements ConsumerService{
 				    
 	   return consumerDTO;		  
 	  }
+	  
+	@Override
+	public String getLastThreeMessages(Connection dbConn) throws SQLException {
+		StringBuilder result = new StringBuilder();
+
+		PreparedStatement select = dbConn.prepareStatement(
+			"SELECT timestamp, message FROM messages ORDER BY timestamp DESC LIMIT 3");
+		ResultSet resultSet = select.executeQuery();
+
+		while (resultSet.next()) {
+			long timestamp = resultSet.getLong("timestamp");
+			long message = resultSet.getLong("message");
+
+			result.append("Timestamp: ").append(timestamp).append(", Message: ").append(message).append("\n");
+		}
+		
+		return result.toString();
+	}
 	  
 	  // Connect to DB and return the connection object	  
 	  @Override

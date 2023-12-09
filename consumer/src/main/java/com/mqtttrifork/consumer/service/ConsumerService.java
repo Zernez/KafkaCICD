@@ -23,6 +23,8 @@ public interface ConsumerService {
 	KafkaConsumer<String, String> setUpConsumerKafka();
 	
 	KafkaProducer<String, String> setUpProducerKafka();
+
+	String getLastThreeMessages(Connection dbConn) throws SQLException;
 }
 
 

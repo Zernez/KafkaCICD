@@ -36,7 +36,7 @@ public class ConsumerDTO {
         this.timestamp = Long.parseLong(timestampPart);
         this.message = Long.parseLong(counterPart);
         
-        return this.timestamp;
+        return Long.parseLong(timestampPart);
     }
     
 	// Check if the timestamp is older than 1 minute
@@ -47,6 +47,6 @@ public class ConsumerDTO {
 
     // Check if the number is odd
     public boolean isOdd(long number) {
-        return number % 2 != 0;
+        return number % 2L != 0L;
     }
 }

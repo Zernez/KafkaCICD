@@ -1,7 +1,11 @@
 package com.mqtttrifork.consumer.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -12,16 +16,16 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 
 import com.mqtttrifork.consumer.dto.ConsumerDTO;
 import com.mqtttrifork.consumer.service.ConsumerService;
+import com.mqtttrifork.consumer.service.impl.ConsumerServiceImpl;
 
-
-@RestController
-@RequestMapping("/")
+@Controller
+@Service
 public class ConsumerController {
 	
 	// Connector access to model level services and DTO
 	@Autowired
 	private ConsumerService consumerService;
-    
+
 	private Connection connDB;	
     private KafkaProducer<String, String> kafkaProducer;
     private KafkaConsumer<String, String> kafkaConsumer;
@@ -33,6 +37,7 @@ public class ConsumerController {
     	this.kafkaProducer = null;
     	this.kafkaConsumer = null;
     	this.consumerDTO = new ConsumerDTO();
+        this.consumerService = new ConsumerServiceImpl();
     }
     
     // Setup consumer Kafka and store the instance
@@ -94,4 +99,18 @@ public class ConsumerController {
 			}		
 		}
 	}
+    
+    // REST endpoint to get the current status of the consumer and the last 3 messages published on the DB
+    @GetMapping("/")
+    public ResponseEntity<String> checkConsistence() {
+        String dbMessages = null;
+        
+        try {
+            dbMessages = consumerService.getLastThreeMessages(this.connDB);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return new ResponseEntity<>(dbMessages , HttpStatus.OK);
+    }
 }
