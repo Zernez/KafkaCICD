@@ -91,8 +91,8 @@ pipeline {
                 script{              
                     docker.withRegistry('https://index.docker.io/v1/', 'dockerlogin') 
                         {
-                        def producerImage = docker.build("kernetix/producer:v${env.BUILD_ID}", "./producer")                                              
-                            producerImage.push("latest")              
+                        def producerImage = docker.build("kernetix/producer:latest", "./producer")                                              
+                            producerImage.push()              
                         }            
                 }          
             }      
@@ -169,8 +169,8 @@ pipeline {
                 script{              
                     docker.withRegistry('https://index.docker.io/v1/', 'dockerlogin') 
                         {
-                        def consumerImage = docker.build("kernetix/consumer:v${env.BUILD_ID}", "./consumer")                                                 
-                            consumerImage.push("latest")              
+                        def consumerImage = docker.build("kernetix/consumer:latest", "./consumer")                                                 
+                            consumerImage.push()              
                         }            
                 }          
             }      
