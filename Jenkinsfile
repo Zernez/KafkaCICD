@@ -27,9 +27,9 @@ pipeline {
                 }
             }
 
-            // when{
-            //     changeset "**/worker/**"
-            // }
+            when{
+                changeset "**/producer/**"
+            }
 
             steps{
                 echo 'Compiling producer app'
@@ -47,9 +47,9 @@ pipeline {
                 }
             }
 
-            // when{
-            //     changeset "**/worker/**"
-            // }
+            when{
+                changeset "**/producer/**"
+            }
 
             steps{
                 echo 'Running Unit Tets on producer app'
@@ -63,13 +63,12 @@ pipeline {
             agent{
                 docker{
                     image 'kernetix/producer:latest'             
-                    // args '-v $HOME/.m2:/root/.m2'
                 }
             }
 
-            // when{
-            //     changeset "**/worker/**"
-            // }
+            when{
+                changeset "**/producer/**"
+            }
             
             steps{
                 echo 'Packaging producer app'
@@ -82,9 +81,9 @@ pipeline {
         stage('Producer docker-package'){          
             agent any          
             
-            // when{            
-            //     changeset "**/worker/**"                  
-            // }          
+            when{            
+                changeset "**/producer/**"                  
+            }          
 
             steps{            
                 echo 'Packaging producer app with docker: version and latest'            
@@ -105,9 +104,9 @@ pipeline {
                 }
             }
 
-            // when{
-            //     changeset "**/worker/**"
-            // }
+            when{
+                changeset "**/consumer/**"
+            }
 
             steps{
                 echo 'Compiling consumer app'
@@ -121,13 +120,12 @@ pipeline {
             agent{
                 docker{
                     image 'kernetix/consumer:latest'          
-//                    args '-v $HOME/.m2:/root/.m2'
                 }
             }
 
-            // when{
-            //     changeset "**/worker/**"
-            // }
+            when{
+                changeset "**/counsumer/**"
+            }
 
             steps{
                 echo 'Running Unit Tests on consumer app'
@@ -141,13 +139,12 @@ pipeline {
             agent{
                 docker{
                     image 'kernetix/consumer:latest'             
-                    // args '-v $HOME/.m2:/root/.m2'
                 }
             }
 
-            // when{
-            //     changeset "**/worker/**"
-            // }
+            when{
+                changeset "**/consumer/**"
+            }
             
             steps{
                 echo 'Packaging consumer app'
@@ -160,9 +157,9 @@ pipeline {
         stage('consumer docker-package'){          
             agent any          
             
-            // when{            
-            //     changeset "**/worker/**"                  
-            // }          
+            when{            
+                changeset "**/consumer/**"                  
+            }          
 
             steps{            
                 echo 'Packaging consumer app with docker: version and latest'            
