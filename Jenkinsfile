@@ -6,11 +6,11 @@ pipeline {
                 description: 'Type of scan that is going to perform inside the container',
                 name: 'SCAN_TYPE')
 
-        string (defaultValue: 'http://host.docker.internal:5000',
+        string (defaultValue: 'http://host.docker.internal:8091',
                 description: 'Target URL to scan',
                 name: 'TARGET')
 
-        string (defaultValue: 'http://host.docker.internal:5001',
+        string (defaultValue: 'http://host.docker.internal:8092',
                 description: 'Second target URL to scan',
                 name: 'TARGET2')
 
@@ -375,7 +375,7 @@ pipeline {
                     docker rm owasp
                 '''
                 sh '''
-                    sleep 10min
+                    sleep 10m
                 '''      
                 sh '''
                     docker compose down
