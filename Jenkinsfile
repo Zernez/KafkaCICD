@@ -176,26 +176,6 @@ pipeline {
             }      
         } 
 
-        // stage('vote docker-package'){          
-        //     agent any
-
-        //     when{            
-        //         changeset "**/vote/**"                    
-        //     }          
-
-        //     steps{            
-        //         echo 'Packaging vote app with docker: version and latest'            
-        //         script{              
-        //             docker.withRegistry('https://index.docker.io/v1/', 'dockerlogin') 
-        //                 {                  
-        //                 def voteImage = docker.build("kernetix/vote:v${env.BUILD_ID}", "./vote")                  
-        //                     voteImage.push()                                
-        //                     voteImage.push("latest")              
-        //                 }            
-        //         }          
-        //     }      
-        // }
-
         // stage('Sonarqube') {
         //     agent any
         
@@ -243,14 +223,14 @@ pipeline {
         //     }
         // }
 
-        // stage('Deploy'){
-        //     agent any
+        stage('Deploy'){
+            agent any
             
-        //     steps{
-        //         echo 'Deploy instavote app with docker compose'
-        //         sh 'docker compose up -d'
-        //     }
-        // }
+            steps{
+                echo 'Deploy instavote app with docker compose'
+                sh 'docker compose up -d'
+            }
+        }
 
         // stage('Pipeline Info') {
         //     agent any
