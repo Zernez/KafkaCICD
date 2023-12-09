@@ -9,4 +9,4 @@ RUN sleep 30
 CMD java -jar target/consumer-0.0.1-SNAPSHOT.jar  
 WORKDIR /
 
-EXPOSE 5001
+EXPOSE 8091

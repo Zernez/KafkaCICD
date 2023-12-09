@@ -9,4 +9,4 @@ RUN sleep 30
 CMD java -jar target/producer-0.0.1-SNAPSHOT.jar  
 WORKDIR /
 
-EXPOSE 5000
+EXPOSE 8092
