@@ -44,7 +44,7 @@ services:
         - 5000:8090
       depends_on:
         - db
-        - kakfa
+        - kafka-container
         - zookeeper
       networks:
         - jenkins
@@ -56,7 +56,7 @@ services:
         - 5001:8091
       depends_on:
         - db
-        - kakfa
+        - kafka-container
         - zookeeper
       networks:
         - jenkins
