@@ -23,7 +23,7 @@ pipeline {
         stage('producer build'){
             agent{
                 docker{
-                    image 'kafkajava-prod:latest'           
+                    image 'kernetix/producer:latest'           
                 }
             }
 
@@ -32,8 +32,8 @@ pipeline {
             // }
 
             steps{
-                echo 'Compiling producer app..'
-                dir('producer'){
+                echo 'Compiling producer app'
+                dir('app'){
                     sh 'mvn compile'
                 }
             }
@@ -42,7 +42,7 @@ pipeline {
         stage('producer test'){
             agent{
                 docker{
-                    image 'kafkajava-prod:latest'          
+                    image 'kernetix/producer:latest'          
 //                    args '-v $HOME/.m2:/root/.m2'
                 }
             }
@@ -53,10 +53,8 @@ pipeline {
 
             steps{
                 echo 'Running Unit Tets on producer app'
-                dir('producer'){
-                    sh 'java -jar target/producer-0.0.1-SNAPSHOT.jar'
-                    sh 'mvn clean test'
-                    sh 'mvn spring-boot:stop'
+                dir('app'){
+                    sh 'mvn test'
                 }
             }
         }
@@ -64,7 +62,7 @@ pipeline {
         stage('producer package'){
             agent{
                 docker{
-                    image 'kafkajava-prod:latest'             
+                    image 'kernetix/producer:latest'             
                     // args '-v $HOME/.m2:/root/.m2'
                 }
             }
@@ -75,7 +73,7 @@ pipeline {
             
             steps{
                 echo 'Packaging producer app'
-                dir('producer'){
+                dir('app'){
                     sh 'mvn clean package spring-boot:repackage -DskipTests'
                 }
             }
@@ -93,9 +91,8 @@ pipeline {
                 script{              
                     docker.withRegistry('https://index.docker.io/v1/', 'dockerlogin') 
                         {
-                        def workerImage = docker.build("kernetix/kafkajava-prod:v${env.BUILD_ID}", "./producer")                  
-                            workerImage.push()                                 
-                            workerImage.push("latest")              
+                        def producerImage = docker.build("kernetix/producer:v${env.BUILD_ID}", "./producer")                                              
+                            producerImage.push("latest")              
                         }            
                 }          
             }      
@@ -104,7 +101,7 @@ pipeline {
         stage('consumer build'){
             agent{
                 docker{
-                    image 'kafkajava-cons:latest'           
+                    image 'kernetix/consumer:latest'           
                 }
             }
 
@@ -114,7 +111,7 @@ pipeline {
 
             steps{
                 echo 'Compiling consumer app'
-                dir('consumer'){
+                dir('app'){
                     sh 'mvn compile'
                 }
             }
@@ -123,7 +120,7 @@ pipeline {
         stage('consumer test'){
             agent{
                 docker{
-                    image 'kafkajava-cons:latest'          
+                    image 'kernetix/consumer:latest'          
 //                    args '-v $HOME/.m2:/root/.m2'
                 }
             }
@@ -133,11 +130,9 @@ pipeline {
             // }
 
             steps{
-                echo 'Running Unit Tets on consumer app'
+                echo 'Running Unit Tests on consumer app'
                 dir('app'){
-                    sh 'java -jar target/consumer-0.0.1-SNAPSHOT.jar'
-                    sh 'mvn clean test'
-                    sh 'mvn spring-boot:stop'
+                    sh 'mvn test'
                 }
             }
         }
@@ -145,7 +140,7 @@ pipeline {
         stage('consumer package'){
             agent{
                 docker{
-                    image 'kafkajava-cons:latest'             
+                    image 'kernetix/consumer:latest'             
                     // args '-v $HOME/.m2:/root/.m2'
                 }
             }
@@ -156,7 +151,7 @@ pipeline {
             
             steps{
                 echo 'Packaging consumer app'
-                dir('consumer'){
+                dir('app'){
                     sh 'mvn clean package spring-boot:repackage -DskipTests'
                 }
             }
@@ -170,13 +165,12 @@ pipeline {
             // }          
 
             steps{            
-                echo 'Packaging worker app with docker: version and latest'            
+                echo 'Packaging consumer app with docker: version and latest'            
                 script{              
                     docker.withRegistry('https://index.docker.io/v1/', 'dockerlogin') 
                         {
-                        def workerImage = docker.build("kernetix/kafkajava-prod:v${env.BUILD_ID}", "./consumer")                  
-                            workerImage.push()                                 
-                            workerImage.push("latest")              
+                        def consumerImage = docker.build("kernetix/consumer:v${env.BUILD_ID}", "./consumer")                                                 
+                            consumerImage.push("latest")              
                         }            
                 }          
             }      
