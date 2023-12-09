@@ -10,55 +10,55 @@ networks:
     driver: bridge
 
 services:
-    zookeeper:
-        ports:
-            - 2181:2181
-        image: ubuntu/zookeeper:edge
+  zookeeper:
+      ports:
+          - 2181:2181
+      image: ubuntu/zookeeper:edge
 
-    kafka:
-        container_name: kafka-container
-        environment:
-            - TZ=UTC
-            - ZOOKEEPER_HOST=host.docker.internal
-        ports:
-            - 9092:9092
-        depends_on:
-            - zookeeper
-        image: ubuntu/kafka:3.1-22.04_beta
-        networks:
-          - jenkins
-
-    db:
-      image: postgres:9.4
-      volumes:
-        - "db-data:/var/lib/postgresql/data"
+  kafka:
+      container_name: kafka-container
       environment:
-        - POSTGRES_HOST_AUTH_METHOD=trust
+          - TZ=UTC
+          - ZOOKEEPER_HOST=host.docker.internal
+      ports:
+          - 9092:9092
+      depends_on:
+          - zookeeper
+      image: ubuntu/kafka:3.1-22.04_beta
       networks:
         - jenkins
 
-    kproducer:
-      image: kafkajava-prod:latest
-      build: ./producer
-      ports:
-        - 5000:8090
-      depends_on:
-        - db
-        - kafka-container
-        - zookeeper
-      networks:
-        - jenkins
+  db:
+    image: postgres:9.4
+    volumes:
+      - "db-data:/var/lib/postgresql/data"
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    networks:
+      - jenkins
 
-    kconsumer:
-      image: kafkajava-prod:latest
-      build: ./producer
-      ports:
-        - 5001:8091
-      depends_on:
-        - db
-        - kafka-container
-        - zookeeper
-      networks:
-        - jenkins
+  kproducer:
+    image: kafkajava-prod:latest
+    build: ./producer
+    ports:
+      - 5000:8090
+    depends_on:
+      - db
+      - kafka
+      - zookeeper
+    networks:
+      - jenkins
+
+  kconsumer:
+    image: kafkajava-prod:latest
+    build: ./producer
+    ports:
+      - 5001:8091
+    depends_on:
+      - db
+      - kafka
+      - zookeeper
+    networks:
+      - jenkins
 
 
