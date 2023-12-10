@@ -186,7 +186,7 @@ pipeline {
             steps {
                 echo 'Running Sonarqube Analysis..'
                 withSonarQubeEnv('TriforkApp') {
-                sh '${sonarpath}/bin/sonar-scanner' - Dproject.settings=sonar-project.properties -Dorg.jenkinsci.plugins.durabletask.BourneShellScript.HEARTBEAT_CHECK_INTERVAL=86400
+                sh '${sonarpath}/bin/sonar-scanner - Dproject.settings=sonar-project.properties -Dorg.jenkinsci.plugins.durabletask.BourneShellScript.HEARTBEAT_CHECK_INTERVAL=86400'
                 }
             }
         }
