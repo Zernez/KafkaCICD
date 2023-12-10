@@ -43,13 +43,12 @@ pipeline {
             agent{
                 docker{
                     image 'kernetix/producer:latest'          
-//                    args '-v $HOME/.m2:/root/.m2'
                 }
             }
 
-            when{
-                changeset "producer/*"
-            }
+            // when{
+            //     changeset "producer/*"
+            // }
 
             steps{
                 echo 'Running Unit Tets on producer app'
@@ -123,9 +122,9 @@ pipeline {
                 }
             }
 
-            when{
-                changeset "consumer/*"
-            }
+            // when{
+            //     changeset "consumer/*"
+            // }
 
             steps{
                 echo 'Running Unit Tests on consumer app'
