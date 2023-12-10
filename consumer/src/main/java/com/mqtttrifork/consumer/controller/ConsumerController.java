@@ -111,9 +111,6 @@ public class ConsumerController {
             e.printStackTrace();
         }
 
-        String response = "Consumer is running and the last 3 messages published on the DB are: \n" + dbMessages + "\n";
-        response = response + "Last timestamp and counter are: " + String.valueOf(this.consumerDTO.getTimestamp()) + " and " + String.valueOf(this.consumerDTO.getMessage());
-
-        return new ResponseEntity<>(response , HttpStatus.OK);
+        return new ResponseEntity<>(dbMessages , HttpStatus.OK);
     }
 }
