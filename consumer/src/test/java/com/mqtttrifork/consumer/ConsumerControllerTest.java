@@ -58,7 +58,7 @@ class ConsumerControllerTest {
     @Test
     public void testCheckConsistence() throws SQLException {
         //Arrange
-        String expectedDbMessages = "Timestamp: Test" + ", Counter: Test"; 
+        String expectedDbMessages = "Consumer is running and the last 3 messages published on the DB are: \n Timestamp: Test, Counter: Test \n Last timestamp and counter are: 0 and 0"; 
         doReturn(expectedDbMessages).when(consumerService).getLastThreeMessages(any());
         ResponseEntity<String> response = consumerController.checkConsistence();
 
