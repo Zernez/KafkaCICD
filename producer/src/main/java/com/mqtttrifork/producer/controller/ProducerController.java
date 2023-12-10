@@ -18,18 +18,19 @@ public class ProducerController {
     // Build to manage and keep track of 9,223,372,036,854,775,807 messages 
     private Map<String, Long> stats = new HashMap<>();
     private KafkaProducer<String, String> kafkaProducer;
+    private Properties properties;
 
     public ProducerController() {
-        stats = new HashMap<>();
-        stats.put("counter", (long) 0);
-        stats.put("timestamp", (long) 0);
+        this.stats = new HashMap<>();
+        this.stats.put("counter", (long) 0);
+        this.stats.put("timestamp", (long) 0);
 
         // Initialize Kafka producer
-        Properties properties = new Properties();
-        properties.put("bootstrap.servers", "kafka:9092");
-        properties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        properties.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        kafkaProducer = new KafkaProducer<>(properties);
+        this.properties = new Properties();
+        this.properties.put("bootstrap.servers", "kafka:9092");
+        this.properties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        this.properties.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        kafkaProducer = new KafkaProducer<>(this.properties);
     }
 
     public void publish() {
