@@ -58,8 +58,9 @@ class ConsumerControllerTest {
     @Test
     public void testCheckConsistence() throws SQLException {
         //Arrange
-        String expectedDbMessages = "Consumer is running and the last 3 messages published on the DB are: \n Timestamp: Test, Counter: Test \n Last timestamp and counter are: 0 and 0"; 
-        doReturn(expectedDbMessages).when(consumerService).getLastThreeMessages(any());
+        String expectedDbMessages = "Consumer is running and the last 3 messages published on the DB are: \nTimestamp: Test, Counter: Test\nLast timestamp and counter are: 0 and 0"; 
+        String stubMessage = "Timestamp: Test, Counter: Test";
+        doReturn(stubMessage).when(consumerService).getLastThreeMessages(any());
         ResponseEntity<String> response = consumerController.checkConsistence();
 
         //Assert
