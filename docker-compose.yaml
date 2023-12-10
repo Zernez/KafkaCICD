@@ -1,8 +1,8 @@
-version: "2"
+version: "3.8"
 
 volumes:
-  kafka_data:
-    driver: local
+  # kafka_data:
+  #   driver: local
   db-data:
 
 networks:
@@ -10,26 +10,74 @@ networks:
     driver: bridge
 
 services:
-  zookeeper:
-      ports:
-          - 2181:2181
-      image: ubuntu/zookeeper:edge
+  # zookeeper:
+  #     ports:
+  #         - 2181:2181
+  #     image: ubuntu/zookeeper:edge
+  #     # networks:
+  #     #   - jenkins
 
+  # kafka:
+  #     container_name: kafka-container
+  #     environment:
+  #         - TZ=UTC
+  #         - ZOOKEEPER_HOST=host.docker.internal
+  #     ports:
+  #         - 9092:9092
+  #     image: ubuntu/kafka:3.1-22.04_beta
+  #     # networks:
+  #     #   - jenkins
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    healthcheck:
+      test: ["CMD", "sleep", "10"]
+      interval: 20s
+      timeout: 12s
+      retries: 2
+      start_period: 20s
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 22181:2181
+    networks:
+      - jenkins
+  
   kafka:
-      container_name: kafka-container
-      environment:
-          - TZ=UTC
-          - ZOOKEEPER_HOST=host.docker.internal
-      ports:
-          - 9092:9092
-      depends_on:
-          - zookeeper
-      image: ubuntu/kafka:3.1-22.04_beta
-      networks:
-        - jenkins
+    image: confluentinc/cp-kafka:latest
+    healthcheck:
+      test: ["CMD", "sleep", "10"]
+      interval: 10s
+      timeout: 12s
+      retries: 2
+      start_period: 10s
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    ports:
+      - 29092:29092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - jenkins
 
   db:
     image: postgres:9.4
+    healthcheck:
+      test: ["CMD", "sleep", "10"]
+      interval: 10s
+      timeout: 12s
+      retries: 2
+      start_period: 10s
+    depends_on:
+      kafka:
+        condition: service_healthy
     volumes:
       - "db-data:/var/lib/postgresql/data"
     environment:
@@ -38,28 +86,32 @@ services:
       - jenkins
 
   kproducer:
-    image: kafkajava-prod:latest
-    build: ./producer
+    image: kernetix/producer:latest
+    healthcheck:
+      test: ["CMD", "sleep", "10"]
+      interval: 10s
+      timeout: 12s
+      retries: 2
+      start_period: 10s
+    depends_on:
+      db:
+        condition: service_healthy
+    # build: ./producer
     ports:
       - 5000:8092
     command: bash -c "java -jar target/producer-0.0.1-SNAPSHOT.jar"
-    depends_on:
-      - db
-      - kafka
-      - zookeeper
     networks:
       - jenkins
 
   kconsumer:
-    image: kafkajava-prod:latest
-    build: ./consumer
+    image: kernetix/consumer:latest
+    depends_on:
+      kproducer:
+        condition: service_healthy
+    # build: ./consumer
     ports:
       - 5001:8091
     command: bash -c "java -jar target/consumer-0.0.1-SNAPSHOT.jar"
-    depends_on:
-      - db
-      - kafka
-      - zookeeper
     networks:
       - jenkins
 

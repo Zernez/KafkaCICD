@@ -173,194 +173,181 @@ pipeline {
             }      
         } 
 
-        // stage('Sonarqube') {
-        //     agent any
+        stage('Sonarqube') {
+            agent any
         
-        //     tools {
-        //         jdk 'JDK11'
-        //     }
+            tools {
+                jdk 'JDK11'
+            }
             
-        //     environment{
-        //         sonarpath = tool 'Sonar'
-        //     }
+            environment{
+                sonarpath = tool 'Sonar'
+            }
         
-        //     steps {
-        //         echo 'Running Sonarqube Analysis..'
-        //         withSonarQubeEnv('Sonarcube-Voteapp') {
-        //         sh '${sonarpath}/bin/sonar-scanner'
-        //         }
-        //     }
-        // }
+            steps {
+                echo 'Running Sonarqube Analysis..'
+                withSonarQubeEnv('TriforkApp') {
+                sh '${sonarpath}/bin/sonar-scanner'
+                }
+            }
+        }
 
-        // stage("Quality Gate") {
+        stage("Quality Gate") {
             
-        //     when{
-        //         branch 'master'
-        //     }
+            // when{
+            //     branch 'master'
+            // }
             
-        //     steps {
-        //         // Parameter indicates whether to set pipeline to UNSTABLE if Quality Gate fails
-        //         // true = set pipeline to UNSTABLE, false = don't
-        //         timeout(time: 1, unit: 'HOURS') {
-        //             waitForQualityGate abortPipeline: true
-        //         }
-        //     }
-        // }
-
-        // stage('e2e test'){
-        //     agent any
-        
-        //     when{
-        //         branch 'master'
-        //     }
-        
-        //     steps{
-        //         echo 'Running E2E test on the app'
-        //         sh './e2e.sh'
-        //     }
-        // }
+            steps {
+                // Parameter indicates whether to set pipeline to UNSTABLE if Quality Gate fails
+                // true = set pipeline to UNSTABLE, false = don't
+                timeout(time: 1, unit: 'HOURS') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
 
         stage('Deploy'){
             agent any
             
             steps{
                 echo 'Deploy instavote app with docker compose'
-                // sh 'docker network create jenkins'  
+                sh 'docker network create jenkins || true'  
                 sh 'docker compose up -d'
                 sleep time: 60, unit: 'SECONDS'
             }
         }
 
-        // stage('Pipeline Info') {
-        //     agent any
+        stage('Pipeline Info') {
+            agent any
 
-        //     steps {
-        //         script {
-        //             echo "<--Parameter Initialization-->"
-        //             echo """
-        //             The current parameters are:
-        //                 Scan Type: ${params.SCAN_TYPE}
-        //                 Target: ${params.TARGET}
-        //                 Target2: ${params.TARGET2}
-        //                 Generate report: ${params.GENERATE_REPORT}
-        //             """
-        //         }
-        //     }
-        // }
+            steps {
+                script {
+                    echo "<--Parameter Initialization-->"
+                    echo """
+                    The current parameters are:
+                        Scan Type: ${params.SCAN_TYPE}
+                        Target: ${params.TARGET}
+                        Target2: ${params.TARGET2}
+                        Generate report: ${params.GENERATE_REPORT}
+                    """
+                }
+            }
+        }
 
-        // stage('Setting up OWASP ZAP docker container') {
-        //     agent any
+        stage('Setting up OWASP ZAP docker container') {
+            agent any
 
-        //     steps {
-        //         script {
-        //                 echo "Pulling up last OWASP ZAP container --> Start"
-        //                 sh 'docker pull owasp/zap2docker-stable'
-        //                 echo "Pulling up last VMS container --> End"
-        //                 echo "Starting container --> Start"
-        //                 sh """
-        //                 docker run -p 9090:8090 -dt --name owasp \
-        //                 --net jenkins \
-        //                 owasp/zap2docker-stable \
-        //                 /bin/bash
-        //                 """
-        //         }
-        //     }
-        // }
+            steps {
+                script {
+                        echo "Pulling up last OWASP ZAP container --> Start"
+                        sh 'docker pull owasp/zap2docker-stable'
+                        echo "Pulling up last VMS container --> End"
+                        echo "Starting container --> Start"
+                        sh """
+                        docker run -p 9090:8090 -dt --name owasp \
+                        --net jenkins \
+                        owasp/zap2docker-stable \
+                        /bin/bash
+                        """
+                }
+            }
+        }
 
-        // stage('Prepare work directory') {
-        //     agent any
+        stage('Prepare work directory') {
+            agent any
 
-        //     when {
-        //         environment name : 'GENERATE_REPORT', value: 'true'
-        //     }
+            when {
+                environment name : 'GENERATE_REPORT', value: 'true'
+            }
 
-        //     steps {
-        //         script {
-        //                 sh """
-        //                     docker exec owasp \
-        //                     mkdir /zap/wrk
-        //                 """
-        //             }
-        //         }
-        // }
+            steps {
+                script {
+                        sh """
+                            docker exec owasp \
+                            mkdir /zap/wrk
+                        """
+                    }
+                }
+        }
 
-        // stage('Scanning target on owasp container') {
-        //     agent any
+        stage('Scanning target on owasp container') {
+            agent any
 
-        //     steps {
-        //         script {
-        //             scan_type = "${params.SCAN_TYPE}"
-        //             target = "${params.TARGET}"
-        //             target2 = "${params.TARGET2}"
-        //             echo "----> scan_type: $scan_type"
+            steps {
+                script {
+                    scan_type = "${params.SCAN_TYPE}"
+                    target = "${params.TARGET}"
+                    target2 = "${params.TARGET2}"
+                    echo "----> scan_type: $scan_type"
 
-        //             if(scan_type == "Baseline"){
-        //                 sh """
-        //                     docker exec owasp \
-        //                     zap-baseline.py \
-        //                     -t $target \
-        //                     -x report.xml \
-        //                     -I
-        //                 """
-        //                 sh """
-        //                     docker exec owasp \
-        //                     zap-baseline.py \
-        //                     -t $target2 \
-        //                     -x report2.xml \
-        //                     -I
-        //                 """
-        //             }
-        //             else if(scan_type == "APIS"){
-        //                 sh """
-        //                     docker exec owasp \
-        //                     zap-api-scan.py \
-        //                     -t $target \
-        //                     -x report.xml \
-        //                     -I
-        //                 """
-        //                 sh """
-        //                     docker exec owasp \
-        //                     zap-api-scan.py \
-        //                     -t $target2 \
-        //                     -x report2.xml \
-        //                     -I
-        //                 """
-        //             }
-        //             else if(scan_type == "Full"){
-        //                 sh """
-        //                     docker exec owasp \
-        //                     zap-full-scan.py \
-        //                     -t $target \
-        //                     //-x report_test.xml
-        //                     -I
-        //                 """
-        //                 sh """
-        //                     docker exec owasp \
-        //                     zap-full-scan.py \
-        //                     -t $target2 \
-        //                     //-x report2.xml
-        //                     -I
-        //                 """
-        //                 //-x report-$(date +%d-%b-%Y).xml
-        //             }
-        //         }
-        //     }
-        // }
+                    if(scan_type == "Baseline"){
+                        sh """
+                            docker exec owasp \
+                            zap-baseline.py \
+                            -t $target \
+                            -x report.xml \
+                            -I
+                        """
+                        sh """
+                            docker exec owasp \
+                            zap-baseline.py \
+                            -t $target2 \
+                            -x report2.xml \
+                            -I
+                        """
+                    }
+                    else if(scan_type == "APIS"){
+                        sh """
+                            docker exec owasp \
+                            zap-api-scan.py \
+                            -t $target \
+                            -x report.xml \
+                            -I
+                        """
+                        sh """
+                            docker exec owasp \
+                            zap-api-scan.py \
+                            -t $target2 \
+                            -x report2.xml \
+                            -I
+                        """
+                    }
+                    else if(scan_type == "Full"){
+                        sh """
+                            docker exec owasp \
+                            zap-full-scan.py \
+                            -t $target \
+                            //-x report_test.xml
+                            -I
+                        """
+                        sh """
+                            docker exec owasp \
+                            zap-full-scan.py \
+                            -t $target2 \
+                            //-x report2.xml
+                            -I
+                        """
+                        //-x report-$(date +%d-%b-%Y).xml
+                    }
+                }
+            }
+        }
 
-        // stage('Copy Report to Workspace'){
-        //     agent any
+        stage('Copy Report to Workspace'){
+            agent any
 
-        //     steps {
-        //         script {
-        //             sh '''
-        //                 docker cp owasp:/zap/wrk/report.xml "${WORKSPACE}/report.xml"
-        //             '''
-        //             sh '''
-        //                 docker cp owasp:/zap/wrk/report.xml "${WORKSPACE}/report2.xml"
-        //             '''
-        //             }
-        //     }
-        // }
+            steps {
+                script {
+                    sh '''
+                        docker cp owasp:/zap/wrk/report.xml "${WORKSPACE}/report.xml"
+                    '''
+                    sh '''
+                        docker cp owasp:/zap/wrk/report.xml "${WORKSPACE}/report2.xml"
+                    '''
+                    }
+            }
+        }
     }
 
     post{
@@ -368,12 +355,12 @@ pipeline {
             script {
                 echo 'Building multibranch pipeline for worker is completed' 
                 echo "Removing container..."
-                // sh '''
-                //     docker stop owasp
-                // '''
-                // sh '''
-                //     docker rm owasp
-                // '''
+                sh '''
+                    docker stop owasp
+                '''
+                sh '''
+                    docker rm owasp
+                '''
                 sh '''
                     sleep 2m
                 '''      
