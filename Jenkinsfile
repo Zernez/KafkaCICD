@@ -6,11 +6,11 @@ pipeline {
                 description: 'Type of scan that is going to perform inside the container',
                 name: 'SCAN_TYPE')
 
-        string (defaultValue: 'http://host.docker.internal:8090',
+        string (defaultValue: 'http://host.docker.internal:5000',
                 description: 'Target URL to scan',
                 name: 'TARGET')
 
-        string (defaultValue: 'http://host.docker.internal:8091',
+        string (defaultValue: 'http://host.docker.internal:5001',
                 description: 'Second target URL to scan',
                 name: 'TARGET2')
 
@@ -27,9 +27,9 @@ pipeline {
                 }
             }
 
-            when{
-                changeset "producer/*"
-            }
+            // when{
+            //     changeset "producer/*"
+            // }
 
             steps{
                 echo 'Compiling producer app'
@@ -65,9 +65,9 @@ pipeline {
                 }
             }
 
-            when{
-                changeset "producer/*"
-            }
+            // when{
+            //     changeset "producer/*"
+            // }
             
             steps{
                 echo 'Packaging producer app'
@@ -80,9 +80,9 @@ pipeline {
         stage('Producer docker-package'){          
             agent any          
             
-            when{            
-                changeset "producer/*"                  
-            }          
+            // when{            
+            //     changeset "producer/*"                  
+            // }          
 
             steps{            
                 echo 'Packaging producer app with docker: version and latest'            
@@ -103,9 +103,9 @@ pipeline {
                 }
             }
 
-            when{
-                changeset "consumer/*"
-            }
+            // when{
+            //     changeset "consumer/*"
+            // }
 
             steps{
                 echo 'Compiling consumer app'
@@ -141,9 +141,9 @@ pipeline {
                 }
             }
 
-            when{
-                changeset "consumer/*"
-            }
+            // when{
+            //     changeset "consumer/*"
+            // }
             
             steps{
                 echo 'Packaging consumer app'
@@ -156,9 +156,9 @@ pipeline {
         stage('consumer docker-package'){          
             agent any          
             
-            when{            
-                changeset "consumer/*"                 
-            }          
+            // when{            
+            //     changeset "consumer/*"                 
+            // }          
 
             steps{            
                 echo 'Packaging consumer app with docker: version and latest'            
@@ -270,7 +270,7 @@ pipeline {
                             docker exec owasp \
                             zap-baseline.py \
                             -t $target \
-                            -x report.xml \
+                            -x report1.xml \
                             -I
                         """
                         sh """
@@ -286,7 +286,7 @@ pipeline {
                             docker exec owasp \
                             zap-api-scan.py \
                             -t $target \
-                            -x report.xml \
+                            -x report1.xml \
                             -I
                         """
                         sh """
@@ -302,7 +302,7 @@ pipeline {
                             docker exec owasp \
                             zap-full-scan.py \
                             -t $target \
-                            //-x report_test.xml
+                            //-x report1.xml
                             -I
                         """
                         sh """
@@ -312,7 +312,6 @@ pipeline {
                             //-x report2.xml
                             -I
                         """
-                        //-x report-$(date +%d-%b-%Y).xml
                     }
                 }
             }
@@ -324,10 +323,10 @@ pipeline {
             steps {
                 script {
                     sh '''
-                        docker cp owasp:/zap/wrk/report.xml "${WORKSPACE}/report.xml"
+                        docker cp owasp:/zap/wrk/report1.xml "${WORKSPACE}/reportProducer.xml"
                     '''
                     sh '''
-                        docker cp owasp:/zap/wrk/report.xml "${WORKSPACE}/report2.xml"
+                        docker cp owasp:/zap/wrk/report2.xml "${WORKSPACE}/reportConsumer.xml"
                     '''
                     }
             }
@@ -346,7 +345,7 @@ pipeline {
                     docker rm owasp
                 '''
                 sh '''
-                    sleep 5m
+                    sleep 10m
                 '''      
                 sh '''
                     docker compose down

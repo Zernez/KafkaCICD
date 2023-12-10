@@ -1,8 +1,6 @@
 version: "3.8"
 
 volumes:
-  # kafka_data:
-  #   driver: local
   db-data:
 
 networks:
@@ -10,24 +8,6 @@ networks:
     driver: bridge
 
 services:
-  # zookeeper:
-  #     ports:
-  #         - 2181:2181
-  #     image: ubuntu/zookeeper:edge
-  #     # networks:
-  #     #   - jenkins
-
-  # kafka:
-  #     container_name: kafka-container
-  #     environment:
-  #         - TZ=UTC
-  #         - ZOOKEEPER_HOST=host.docker.internal
-  #     ports:
-  #         - 9092:9092
-  #     image: ubuntu/kafka:3.1-22.04_beta
-  #     # networks:
-  #     #   - jenkins
-
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     healthcheck:
@@ -96,7 +76,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    # build: ./producer
+    build: ./producer
     ports:
       - 5000:8092
     command: bash -c "java -jar target/producer-0.0.1-SNAPSHOT.jar"
@@ -108,7 +88,7 @@ services:
     depends_on:
       kproducer:
         condition: service_healthy
-    # build: ./consumer
+    build: ./consumer
     ports:
       - 5001:8091
     command: bash -c "java -jar target/consumer-0.0.1-SNAPSHOT.jar"

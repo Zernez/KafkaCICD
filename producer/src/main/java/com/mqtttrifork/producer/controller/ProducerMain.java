@@ -22,10 +22,10 @@ public class ProducerMain implements CommandLineRunner {
     public void main(String[] args) throws InterruptedException {
         Random random = new Random();
         
-        // Starts the messages transmission with random delay between 50 and 70 seconds
+        // Starts the messages transmission with random delay between 10 and 61 seconds
         while (true) {
             consumerController.publish();
-            int delay = random.nextInt(15000) + 50000;
+            int delay = random.nextInt(51000) + 10000;
             try {
             	Thread.sleep(delay);
             } catch (InterruptedException e) {
