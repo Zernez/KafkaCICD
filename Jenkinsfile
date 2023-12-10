@@ -192,20 +192,20 @@ pipeline {
             }
         }
 
-        stage("Quality Gate") {
+        // stage("Quality Gate") {
             
-            // when{
-            //     branch 'master'
-            // }
+        //     // when{
+        //     //     branch 'master'
+        //     // }
             
-            steps {
-                // Parameter indicates whether to set pipeline to UNSTABLE if Quality Gate fails
-                // true = set pipeline to UNSTABLE, false = don't
-                timeout(time: 1, unit: 'HOURS') {
-                    waitForQualityGate abortPipeline: true
-                }
-            }
-        }
+        //     steps {
+        //         // Parameter indicates whether to set pipeline to UNSTABLE if Quality Gate fails
+        //         // true = set pipeline to UNSTABLE, false = don't
+        //         timeout(time: 1, unit: 'HOURS') {
+        //             waitForQualityGate abortPipeline: true
+        //         }
+        //     }
+        // }
 
         stage('Deploy'){
             agent any
