@@ -334,10 +334,10 @@ pipeline {
     }
 
     post{
-
-        slackSend (channel: "continuous-delivery-notification", message: "Test finished, now the serivices are ready to be visualized")
-
         always{
+
+            slackSend (channel: "continuous-delivery-notification", message: "Test finished, now the serivices are ready to be visualized")
+
             script {
                 echo 'Building multibranch pipeline for worker is completed' 
                 echo "Removing container..."
