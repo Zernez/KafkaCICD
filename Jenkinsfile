@@ -27,9 +27,9 @@ pipeline {
                 }
             }
 
-            // when{
-            //     changeset "producer/*"
-            // }
+            when{
+                changeset "producer/*"
+            }
 
             steps{
                 echo 'Compiling producer app'
@@ -65,9 +65,9 @@ pipeline {
                 }
             }
 
-            // when{
-            //     changeset "producer/*"
-            // }
+            when{
+                changeset "producer/*"
+            }
             
             steps{
                 echo 'Packaging producer app'
@@ -80,9 +80,9 @@ pipeline {
         stage('Producer docker-package'){          
             agent any          
             
-            // when{            
-            //     changeset "producer/*"                  
-            // }          
+            when{            
+                changeset "producer/*"                  
+            }          
 
             steps{            
                 echo 'Packaging producer app with docker: version and latest'            
@@ -103,9 +103,9 @@ pipeline {
                 }
             }
 
-            // when{
-            //     changeset "consumer/*"
-            // }
+            when{
+                changeset "consumer/*"
+            }
 
             steps{
                 echo 'Compiling consumer app'
@@ -141,9 +141,9 @@ pipeline {
                 }
             }
 
-            // when{
-            //     changeset "consumer/*"
-            // }
+            when{
+                changeset "consumer/*"
+            }
             
             steps{
                 echo 'Packaging consumer app'
@@ -156,9 +156,9 @@ pipeline {
         stage('consumer docker-package'){          
             agent any          
             
-            // when{            
-            //     changeset "consumer/*"                 
-            // }          
+            when{            
+                changeset "consumer/*"                 
+            }          
 
             steps{            
                 echo 'Packaging consumer app with docker: version and latest'            
@@ -172,24 +172,24 @@ pipeline {
             }      
         } 
 
-        // stage('Sonarqube') {
-        //     agent any
+        stage('Sonarqube') {
+            agent any
         
-        //     tools {
-        //         jdk 'JDK11'
-        //     }
+            tools {
+                jdk 'JDK11'
+            }
             
-        //     environment{
-        //         sonarpath = tool 'Sonar'
-        //     }
+            environment{
+                sonarpath = tool 'Sonar'
+            }
         
-        //     steps {
-        //         echo 'Running Sonarqube Analysis..'
-        //         withSonarQubeEnv('TriforkApp') {
-        //         sh '${sonarpath}/bin/sonar-scanner -Dproject.settings=sonar-project.properties -Dorg.jenkinsci.plugins.durabletask.BourneShellScript.HEARTBEAT_CHECK_INTERVAL=86400'
-        //         }
-        //     }
-        // }
+            steps {
+                echo 'Running Sonarqube Analysis..'
+                withSonarQubeEnv('TriforkApp') {
+                sh '${sonarpath}/bin/sonar-scanner -Dproject.settings=sonar-project.properties -Dorg.jenkinsci.plugins.durabletask.BourneShellScript.HEARTBEAT_CHECK_INTERVAL=86400'
+                }
+            }
+        }
 
         stage('Deploy'){
             agent any
@@ -348,7 +348,7 @@ pipeline {
                 //     docker rm owasp
                 // '''
                 sh '''
-                    sleep 2m
+                    sleep 5m
                 '''      
                 sh '''
                     docker compose down
@@ -361,12 +361,12 @@ pipeline {
         }
 
         success{
-            // jacoco(
-            //     execPattern: '**/**.exec',
-            //     classPattern: '**/classes',
-            //     sourcePattern: '**/src/main/java',
-            //     sourceInclusionPattern: '**/*.java,**/*.groovy,**/*.kt,**/*.kts'
-            // )
+            jacoco(
+                execPattern: '**/**.exec',
+                classPattern: '**/classes',
+                sourcePattern: '**/src/main/java',
+                sourceInclusionPattern: '**/*.java,**/*.groovy,**/*.kt,**/*.kts'
+            )
 
             slackSend (channel: "continuous-delivery-notification", message: "Build Succeeded - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)")
         }
