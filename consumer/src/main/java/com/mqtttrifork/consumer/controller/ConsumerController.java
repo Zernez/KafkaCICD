@@ -29,12 +29,11 @@ public class ConsumerController {
 	// Connector access to model level services and DTO
 	@Autowired
 	private ConsumerService consumerService;
-    @Autowired
-    private ConsumerDTO consumerDTO;
 
 	private Connection connDB;	
     private KafkaProducer<String, String> kafkaProducer;
     private KafkaConsumer<String, String> kafkaConsumer;
+    private ConsumerDTO consumerDTO;
     
     // Initialize objects
     public ConsumerController() {

@@ -33,7 +33,7 @@ public class ProducerController {
 
         // Initialize Kafka producer
         this.properties = new Properties();
-        this.properties.put("bootstrap.servers", "kafka:9092");
+        this.properties.put("bootstrap.servers", "localhost:29092");
         this.properties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         this.properties.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         kafkaProducer = new KafkaProducer<>(this.properties);

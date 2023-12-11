@@ -20,7 +20,7 @@ public class ConsumerDTO {
     }
     
     public String getTimestampToResend() {
-        return timestampToResend;
+        return this.timestampToResend;
     }
 
     public void setTimestampToResend(String timestampToResend) {
@@ -28,7 +28,7 @@ public class ConsumerDTO {
     }
 
     public String getMessageToResend() {
-        return messageToResend;
+        return this.messageToResend;
     }
 
     public void setMessageToResend(String messageToResend) {
@@ -36,7 +36,7 @@ public class ConsumerDTO {
     }
 
     public String getTimestampToDB() {
-        return timestampToDB;
+        return this.timestampToDB;
     }
 
     public void setTimestampToDB(String timestampToDB) {
@@ -44,7 +44,7 @@ public class ConsumerDTO {
     }
 
     public String getMessageToDB() {
-        return messageToDB;
+        return this.messageToDB;
     }
 
     public void setMessageToDB(String messageToDB) {
@@ -52,14 +52,14 @@ public class ConsumerDTO {
     }
 
 	public long getTimestamp() {
-		return timestamp;
+		return this.timestamp;
 	}
 	public void setTimestamp(long timestamp) {
 		this.timestamp = timestamp;
 	}
 	
 	public long getMessage() {
-		return message;
+		return this.message;
 	}
 	public void setMessage(long message) {
 		this.message = message;
