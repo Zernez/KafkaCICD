@@ -29,6 +29,9 @@ public class ConsumerServiceImpl implements ConsumerService{
 	  public ConsumerDTO saveMessage (Connection dbConn, ConsumerDTO consumerDTO) throws SQLException {
 		  long timestamp = consumerDTO.getTimestamp();
 		  long message = consumerDTO.getMessage();
+
+		  consumerDTO.setTimestampToDB(String.valueOf(timestamp));
+		  consumerDTO.setMessageToDB(String.valueOf(message));
 		  
 		    PreparedStatement insert = dbConn.prepareStatement(
 				      "INSERT INTO messages (timestamp, message) VALUES (?, ?)");
@@ -111,6 +114,9 @@ public class ConsumerServiceImpl implements ConsumerService{
 	    long counter = 	consumerDTO.getMessage() + 1;
 	    consumerDTO.setMessage(counter);
 	
+		consumerDTO.setTimestampToResend(String.valueOf(timestamp));
+		consumerDTO.setMessageToResend(String.valueOf(counter));
+
 	    // Create message with timestamp and counter
 	    String message = "Timestamp: " + timestamp + ", Counter: " + counter;
 	

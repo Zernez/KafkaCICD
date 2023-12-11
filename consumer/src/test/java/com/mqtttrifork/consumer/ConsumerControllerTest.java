@@ -54,17 +54,5 @@ class ConsumerControllerTest {
         assertDoesNotThrow(() -> consumerController.saveMessage());
         verify(consumerService, times(1)).saveMessage(any(), any());
     }
-
-    @Test
-    public void testCheckConsistence() throws SQLException {
-        //Arrange
-        String expectedDbMessages = "Timestamp: Test" + ", Counter: Test"; 
-        doReturn(expectedDbMessages).when(consumerService).getLastThreeMessages(any());
-        ResponseEntity<String> response = consumerController.checkConsistence();
-
-        //Assert
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(expectedDbMessages, response.getBody());
-    }
 }
 

@@ -1,0 +1,48 @@
+version: "3.8"
+
+networks:
+  jenkins:
+    external:
+      name: jenkins
+
+volumes:
+  jenkins-data:
+    external:
+        name: jenkins-data
+  jenkins-docker-certs:
+
+services:
+  trijenkins-blueocean:
+    container_name: triforkApp-blueocean
+    restart: on-failure
+    networks:
+      - jenkins
+    environment:
+      - DOCKER_HOST=tcp://docker:2376
+      - DOCKER_CERT_PATH=/certs/client
+      - DOCKER_TLS_VERIFY=1
+    volumes:
+      - jenkins-data:/var/jenkins_home
+      - jenkins-docker-certs:/certs/client:ro
+    ports:
+        - 8080:8080
+        - 50000:50000
+    image: trijenkins-blueocean:2.426.1-1
+
+  docker:
+    container_name: jenkins-docker
+    privileged: true
+    networks:
+      jenkins:
+        aliases:
+          - docker
+    environment:
+      - DOCKER_TLS_CERTDIR=/certs
+    volumes:
+      - jenkins-docker-certs:/certs/client
+      - jenkins-data:/var/jenkins_home
+    ports:
+      - 2376:2376
+      - 5000:5000
+      - 5001:5001
+    image: docker:dind

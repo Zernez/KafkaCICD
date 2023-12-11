@@ -4,13 +4,53 @@ public class ConsumerDTO {
 
     private long timestamp;
     private long message;
+    private String timestampToDB;
+    private String messageToDB;
+    private String timestampToResend;
+    private String messageToResend;
     
     // Start condition
     public ConsumerDTO(){
     	this.timestamp = 0;
     	this.message = 0;
+    	this.timestampToDB = "";
+    	this.messageToDB = "";
+    	this.timestampToResend = "";
+    	this.messageToResend = "";
     }
     
+    public String getTimestampToResend() {
+        return timestampToResend;
+    }
+
+    public void setTimestampToResend(String timestampToResend) {
+        this.timestampToResend = timestampToResend;
+    }
+
+    public String getMessageToResend() {
+        return messageToResend;
+    }
+
+    public void setMessageToResend(String messageToResend) {
+        this.messageToResend = messageToResend;
+    }
+
+    public String getTimestampToDB() {
+        return timestampToDB;
+    }
+
+    public void setTimestampToDB(String timestampToDB) {
+        this.timestampToDB = timestampToDB;
+    }
+
+    public String getMessageToDB() {
+        return messageToDB;
+    }
+
+    public void setMessageToDB(String messageToDB) {
+        this.messageToDB = messageToDB;
+    }
+
 	public long getTimestamp() {
 		return timestamp;
 	}

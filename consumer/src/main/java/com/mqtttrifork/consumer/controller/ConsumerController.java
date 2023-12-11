@@ -1,8 +1,6 @@
 package com.mqtttrifork.consumer.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
@@ -17,6 +15,12 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import com.mqtttrifork.consumer.dto.ConsumerDTO;
 import com.mqtttrifork.consumer.service.ConsumerService;
 import com.mqtttrifork.consumer.service.impl.ConsumerServiceImpl;
+import org.springframework.http.MediaType;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.util.StreamUtils;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 @Controller
 @Service
@@ -99,18 +103,45 @@ public class ConsumerController {
 			}		
 		}
 	}
-    
-    // REST endpoint to get the current status of the consumer and the last 3 messages published on the DB
-    @GetMapping("/")
-    public ResponseEntity<String> checkConsistence() {
+
+    @GetMapping(value = "/", produces = MediaType.TEXT_HTML_VALUE)
+    @ResponseBody
+    public String getStatus() {
         String dbMessages = null;
-        
+        String lastMessage = "Timestamp: " + String.valueOf(consumerDTO.getMessage()) + ", Counter: " + String.valueOf(consumerDTO.getTimestamp());
+        String lastMessageToDB = "Timestamp: " + String.valueOf(consumerDTO.getMessageToDB()) + ", Counter: " + String.valueOf(consumerDTO.getTimestampToDB());
+        String lastMessageToResend = "Timestamp: " + String.valueOf(consumerDTO.getMessageToResend()) + ", Counter: " + String.valueOf(consumerDTO.getTimestampToResend());
+
         try {
             dbMessages = consumerService.getLastThreeMessages(this.connDB);
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return new ResponseEntity<>(dbMessages , HttpStatus.OK);
+        // Load the HTML template from the static directory
+        String htmlTemplate = loadHtmlTemplate();
+
+        // Replace placeholders in the HTML template with the database messages and last message information
+        String htmlResponse = htmlTemplate.replace("{{dbMessages}}", dbMessages)
+                                          .replace("{{lastMessage}}", lastMessage)
+                                          .replace("{{lastMessageToDB}}", lastMessageToDB)
+                                          .replace("{{lastMessageToResend}}", lastMessageToResend);
+
+        // Return the HTML page as the response
+        return htmlResponse;
+    }
+
+    // Load the HTML template from the static directory
+    private String loadHtmlTemplate() {
+        try {
+            // Load the HTML template file from the static directory
+            Resource resource = new ClassPathResource("static/index.html");
+            byte[] htmlBytes = StreamUtils.copyToByteArray(resource.getInputStream());
+            return new String(htmlBytes, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            // Handle the exception if the HTML template file cannot be loaded
+            e.printStackTrace();
+            return "";
+        }
     }
 }
