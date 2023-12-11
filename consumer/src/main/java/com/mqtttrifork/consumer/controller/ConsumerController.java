@@ -29,11 +29,12 @@ public class ConsumerController {
 	// Connector access to model level services and DTO
 	@Autowired
 	private ConsumerService consumerService;
+    @Autowired
+    private ConsumerDTO consumerDTO;
 
 	private Connection connDB;	
     private KafkaProducer<String, String> kafkaProducer;
     private KafkaConsumer<String, String> kafkaConsumer;
-    private ConsumerDTO consumerDTO;
     
     // Initialize objects
     public ConsumerController() {
@@ -108,9 +109,9 @@ public class ConsumerController {
     @ResponseBody
     public String getStatus() {
         String dbMessages = null;
-        String lastMessage = "Timestamp: " + String.valueOf(consumerDTO.getMessage()) + ", Counter: " + String.valueOf(consumerDTO.getTimestamp());
-        String lastMessageToDB = "Timestamp: " + String.valueOf(consumerDTO.getMessageToDB()) + ", Counter: " + String.valueOf(consumerDTO.getTimestampToDB());
-        String lastMessageToResend = "Timestamp: " + String.valueOf(consumerDTO.getMessageToResend()) + ", Counter: " + String.valueOf(consumerDTO.getTimestampToResend());
+        String lastMessage = "Counter: " + String.valueOf(consumerDTO.getMessage()) + ", Timestamp: " + String.valueOf(consumerDTO.getTimestamp());
+        String lastMessageToDB = "Counter: " + consumerDTO.getMessageToDB() + ", Timestamp: " + consumerDTO.getTimestampToDB();
+        String lastMessageToResend = "Counter: " + consumerDTO.getMessageToResend() + ", Timestamp: " + consumerDTO.getTimestampToResend();
 
         try {
             dbMessages = consumerService.getLastThreeMessages(this.connDB);

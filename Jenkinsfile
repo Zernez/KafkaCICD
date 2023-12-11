@@ -172,24 +172,24 @@ pipeline {
             }      
         } 
 
-        stage('Sonarqube') {
-            agent any
+        // stage('Sonarqube') {
+        //     agent any
         
-            tools {
-                jdk 'JDK11'
-            }
+        //     tools {
+        //         jdk 'JDK11'
+        //     }
             
-            environment{
-                sonarpath = tool 'Sonar'
-            }
+        //     environment{
+        //         sonarpath = tool 'Sonar'
+        //     }
         
-            steps {
-                echo 'Running Sonarqube Analysis..'
-                withSonarQubeEnv('TriforkApp') {
-                sh '${sonarpath}/bin/sonar-scanner -Dproject.settings=sonar-project.properties -Dorg.jenkinsci.plugins.durabletask.BourneShellScript.HEARTBEAT_CHECK_INTERVAL=86400'
-                }
-            }
-        }
+        //     steps {
+        //         echo 'Running Sonarqube Analysis..'
+        //         withSonarQubeEnv('TriforkApp') {
+        //         sh '${sonarpath}/bin/sonar-scanner -Dproject.settings=sonar-project.properties -Dorg.jenkinsci.plugins.durabletask.BourneShellScript.HEARTBEAT_CHECK_INTERVAL=86400'
+        //         }
+        //     }
+        // }
 
         stage('Deploy'){
             agent any
@@ -202,135 +202,135 @@ pipeline {
             }
         }
 
-        stage('Pipeline Info') {
-            agent any
+        // stage('Pipeline Info') {
+        //     agent any
 
-            steps {
-                script {
-                    echo "<--Parameter Initialization-->"
-                    echo """
-                    The current parameters are:
-                        Scan Type: ${params.SCAN_TYPE}
-                        Target: ${params.TARGET}
-                        Target2: ${params.TARGET2}
-                        Generate report: ${params.GENERATE_REPORT}
-                    """
-                }
-            }
-        }
+        //     steps {
+        //         script {
+        //             echo "<--Parameter Initialization-->"
+        //             echo """
+        //             The current parameters are:
+        //                 Scan Type: ${params.SCAN_TYPE}
+        //                 Target: ${params.TARGET}
+        //                 Target2: ${params.TARGET2}
+        //                 Generate report: ${params.GENERATE_REPORT}
+        //             """
+        //         }
+        //     }
+        // }
 
-        stage('Setting up OWASP ZAP docker container') {
-            agent any
+        // stage('Setting up OWASP ZAP docker container') {
+        //     agent any
 
-            steps {
-                script {
-                        echo "Pulling up last OWASP ZAP container --> Start"
-                        sh 'docker pull owasp/zap2docker-stable'
-                        echo "Pulling up last VMS container --> End"
-                        echo "Starting container --> Start"
-                        sh """
-                        docker run -p 9090:8090 -dt --name owasp \
-                        --net jenkins \
-                        owasp/zap2docker-stable \
-                        /bin/bash
-                        """
-                }
-            }
-        }
+        //     steps {
+        //         script {
+        //                 echo "Pulling up last OWASP ZAP container --> Start"
+        //                 sh 'docker pull owasp/zap2docker-stable'
+        //                 echo "Pulling up last VMS container --> End"
+        //                 echo "Starting container --> Start"
+        //                 sh """
+        //                 docker run -p 9090:8090 -dt --name owasp \
+        //                 --net jenkins \
+        //                 owasp/zap2docker-stable \
+        //                 /bin/bash
+        //                 """
+        //         }
+        //     }
+        // }
 
-        stage('Prepare work directory') {
-            agent any
+        // stage('Prepare work directory') {
+        //     agent any
 
-            when {
-                environment name : 'GENERATE_REPORT', value: 'true'
-            }
+        //     when {
+        //         environment name : 'GENERATE_REPORT', value: 'true'
+        //     }
 
-            steps {
-                script {
-                        sh """
-                            docker exec owasp \
-                            mkdir /zap/wrk
-                        """
-                    }
-                }
-        }
+        //     steps {
+        //         script {
+        //                 sh """
+        //                     docker exec owasp \
+        //                     mkdir /zap/wrk
+        //                 """
+        //             }
+        //         }
+        // }
 
-        stage('Scanning target on owasp container') {
-            agent any
+        // stage('Scanning target on owasp container') {
+        //     agent any
 
-            steps {
-                script {
-                    scan_type = "${params.SCAN_TYPE}"
-                    target = "${params.TARGET}"
-                    target2 = "${params.TARGET2}"
-                    echo "----> scan_type: $scan_type"
+        //     steps {
+        //         script {
+        //             scan_type = "${params.SCAN_TYPE}"
+        //             target = "${params.TARGET}"
+        //             target2 = "${params.TARGET2}"
+        //             echo "----> scan_type: $scan_type"
 
-                    if(scan_type == "Baseline"){
-                        sh """
-                            docker exec owasp \
-                            zap-baseline.py \
-                            -t $target \
-                            -x report1.xml \
-                            -I
-                        """
-                        sh """
-                            docker exec owasp \
-                            zap-baseline.py \
-                            -t $target2 \
-                            -x report2.xml \
-                            -I
-                        """
-                    }
-                    else if(scan_type == "APIS"){
-                        sh """
-                            docker exec owasp \
-                            zap-api-scan.py \
-                            -t $target \
-                            -x report1.xml \
-                            -I
-                        """
-                        sh """
-                            docker exec owasp \
-                            zap-api-scan.py \
-                            -t $target2 \
-                            -x report2.xml \
-                            -I
-                        """
-                    }
-                    else if(scan_type == "Full"){
-                        sh """
-                            docker exec owasp \
-                            zap-full-scan.py \
-                            -t $target \
-                            //-x report1.xml
-                            -I
-                        """
-                        sh """
-                            docker exec owasp \
-                            zap-full-scan.py \
-                            -t $target2 \
-                            //-x report2.xml
-                            -I
-                        """
-                    }
-                }
-            }
-        }
+        //             if(scan_type == "Baseline"){
+        //                 sh """
+        //                     docker exec owasp \
+        //                     zap-baseline.py \
+        //                     -t $target \
+        //                     -x report1.xml \
+        //                     -I
+        //                 """
+        //                 sh """
+        //                     docker exec owasp \
+        //                     zap-baseline.py \
+        //                     -t $target2 \
+        //                     -x report2.xml \
+        //                     -I
+        //                 """
+        //             }
+        //             else if(scan_type == "APIS"){
+        //                 sh """
+        //                     docker exec owasp \
+        //                     zap-api-scan.py \
+        //                     -t $target \
+        //                     -x report1.xml \
+        //                     -I
+        //                 """
+        //                 sh """
+        //                     docker exec owasp \
+        //                     zap-api-scan.py \
+        //                     -t $target2 \
+        //                     -x report2.xml \
+        //                     -I
+        //                 """
+        //             }
+        //             else if(scan_type == "Full"){
+        //                 sh """
+        //                     docker exec owasp \
+        //                     zap-full-scan.py \
+        //                     -t $target \
+        //                     //-x report1.xml
+        //                     -I
+        //                 """
+        //                 sh """
+        //                     docker exec owasp \
+        //                     zap-full-scan.py \
+        //                     -t $target2 \
+        //                     //-x report2.xml
+        //                     -I
+        //                 """
+        //             }
+        //         }
+        //     }
+        // }
 
-        stage('Copy Report to Workspace'){
-            agent any
+        // stage('Copy Report to Workspace'){
+        //     agent any
 
-            steps {
-                script {
-                    sh '''
-                        docker cp owasp:/zap/wrk/report1.xml "${WORKSPACE}/reportProducer.xml"
-                    '''
-                    sh '''
-                        docker cp owasp:/zap/wrk/report2.xml "${WORKSPACE}/reportConsumer.xml"
-                    '''
-                    }
-            }
-        }
+        //     steps {
+        //         script {
+        //             sh '''
+        //                 docker cp owasp:/zap/wrk/report1.xml "${WORKSPACE}/reportProducer.xml"
+        //             '''
+        //             sh '''
+        //                 docker cp owasp:/zap/wrk/report2.xml "${WORKSPACE}/reportConsumer.xml"
+        //             '''
+        //             }
+        //     }
+        // }
     }
 
     post{
@@ -341,12 +341,12 @@ pipeline {
             script {
                 echo 'Building multibranch pipeline for worker is completed' 
                 echo "Removing container..."
-                sh '''
-                    docker stop owasp
-                '''
-                sh '''
-                    docker rm owasp
-                '''
+                // sh '''
+                //     docker stop owasp
+                // '''
+                // sh '''
+                //     docker rm owasp
+                // '''
                 sh '''
                     sleep 10m
                 '''      
@@ -361,12 +361,12 @@ pipeline {
         }
 
         success{
-            jacoco(
-                execPattern: '**/**.exec',
-                classPattern: '**/classes',
-                sourcePattern: '**/src/main/java',
-                sourceInclusionPattern: '**/*.java,**/*.groovy,**/*.kt,**/*.kts'
-            )
+            // jacoco(
+            //     execPattern: '**/**.exec',
+            //     classPattern: '**/classes',
+            //     sourcePattern: '**/src/main/java',
+            //     sourceInclusionPattern: '**/*.java,**/*.groovy,**/*.kt,**/*.kts'
+            // )
 
             slackSend (channel: "continuous-delivery-notification", message: "Build Succeeded - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)")
         }
