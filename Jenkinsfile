@@ -348,7 +348,7 @@ pipeline {
                 //     docker rm owasp
                 // '''
                 sh '''
-                    sleep 5m
+                    sleep 8m
                 '''      
                 sh '''
                     docker compose down
